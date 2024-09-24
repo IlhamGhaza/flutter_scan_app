@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../core/colors.dart';
 import '../core/spaces.dart';
+import '../data/datasource/document_local_datasource.dart';
 import '../data/models/documenet_model.dart';
 
 class DetailDocumentPage extends StatefulWidget {
@@ -18,6 +19,28 @@ class DetailDocumentPage extends StatefulWidget {
 }
 
 class _DetailDocumentPageState extends State<DetailDocumentPage> {
+  Future<bool> deleteDocument(DocumentModel document) async {
+    try {
+      // Delete the document from the database
+      int deletedRows =
+          await DocumentLocalDatasource.instance.deleteDocument(document.id!);
+
+      if (deletedRows > 0) {
+        final file = File(document.path!);
+        await file.delete();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete document'),
+        ),
+      );
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,16 +107,43 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
                           child: const Text('Cancel'),
                         ),
                         TextButton(
-                          onPressed: () {
-                            // TODO: Implement delete functionality
-                            //if result is true, delete document and navigate back
+                          onPressed: () async {
+                            bool deleteSuccess =
+                                await deleteDocument(widget.document);
+                            Navigator.of(context).pop(); // Close the dialog
+                            if (deleteSuccess) {
+                              Navigator.of(context)
+                                  .pop(); // Navigate back to the previous page
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                  'Document deleted successfully',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                backgroundColor: Colors.green,
+                              ));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Failed to delete document',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                backgroundColor: Colors.red,
+                                )
+                              );
+                            }
                           },
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.red,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
                             child: const Text(
                               'Delete',
                               style: TextStyle(

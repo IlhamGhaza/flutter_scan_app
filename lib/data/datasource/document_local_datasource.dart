@@ -62,4 +62,13 @@ class DocumentLocalDatasource {
         orderBy: 'createdAt DESC');
     return result.map((map) => DocumentModel.fromMap(map)).toList();
   }
+  Future<int> deleteDocument(int id) async {
+    final db = await database;
+    return await db.delete(
+      'documents', // Nama tabel
+      where: 'id = ?', // Hapus berdasarkan id
+      whereArgs: [id],
+    );
+  }
+
 }
