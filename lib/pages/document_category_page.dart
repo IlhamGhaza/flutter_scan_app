@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_scan_app/pages/latest_document_pages.dart';
+
+import '../data/datasource/document_local_datasource.dart';
+import '../data/models/documenet_model.dart';
+import 'latest_documents_page.dart';
 
 
 class DocumentCategoryPage extends StatefulWidget {
@@ -14,20 +17,20 @@ class DocumentCategoryPage extends StatefulWidget {
 }
 
 class _DocumentCategoryPageState extends State<DocumentCategoryPage> {
-  // List<DocumentModel> documents = [];
+  List<DocumentModel> documents = [];
 
-  // loadData() async {
-  //   documents = await DocumentLocalDatasource.instance
-  //       .getDocumentByCategory(widget.categoryTitle);
-  //   setState(() {});
-  // }
+  loadData() async {
+    documents = await DocumentLocalDatasource.instance
+        .getDocumentByCategory(widget.categoryTitle);
+    setState(() {});
+  }
 
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   loadData();
-  // }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +41,8 @@ class _DocumentCategoryPageState extends State<DocumentCategoryPage> {
       body: Column(
         children: [
           Expanded(
-              child: LatestDocumentPages(
-            // documents: documents,
+              child: LatestDocumentsPage(
+            documents: documents,
           )),
         ],
       ),

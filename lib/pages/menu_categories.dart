@@ -16,12 +16,11 @@ class MenuCategories extends StatelessWidget {
             imagePath: null,
             label: 'Kartu',
             onPressed: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) =>
-              //             const DocumentCategoryPage(categoryTitle: 'Kartu')),
-              //             );
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const DocumentCategoryPage(categoryTitle: 'Kartu')));
             },
           ),
         ),
@@ -30,12 +29,11 @@ class MenuCategories extends StatelessWidget {
             imagePath: null,
             label: 'Nota',
             onPressed: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) =>
-              //             const DocumentCategoryPage(categoryTitle: 'Nota')),
-              //             );
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const DocumentCategoryPage(categoryTitle: 'Nota')));
             },
           ),
         ),
@@ -44,12 +42,11 @@ class MenuCategories extends StatelessWidget {
             imagePath: null,
             label: 'Surat',
             onPressed: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) =>
-              //             const DocumentCategoryPage(categoryTitle: 'Surat')),
-              //             );
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const DocumentCategoryPage(categoryTitle: 'Surat')));
             },
           ),
         ),

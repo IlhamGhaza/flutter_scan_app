@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_scan_app/pages/home_pages.dart';
+import 'package:flutter_scan_app/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const HomePages(),
+      home: const HomePage(),
     );
   }
 }
