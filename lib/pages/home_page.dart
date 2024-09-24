@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                           DocumentScanner(options: documentOptions);
                       DocumentScanningResult result =
                           await documentScanner.scanDocument();
-                      final pdf = result.pdf;
+                      result.pdf;
                       final images = result.images;
 
                       // log('PDF: $pdf');
