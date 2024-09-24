@@ -6,7 +6,6 @@ import '../core/colors.dart';
 import '../core/spaces.dart';
 import '../data/models/documenet_model.dart';
 
-
 class DetailDocumentPage extends StatefulWidget {
   final DocumentModel document;
   const DetailDocumentPage({
@@ -67,6 +66,49 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
               color: AppColors.primary.withOpacity(0.2),
             ),
           ),
+          const SpaceHeight(20),
+          ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Confirm Delete'),
+                      content: const Text(
+                          'Are you sure you want to delete this document?'),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            // TODO: Implement delete functionality
+                            //if result is true, delete document and navigate back
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: const Text(
+                              'Delete',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: const Text("Delete")),
         ],
       ),
     );
