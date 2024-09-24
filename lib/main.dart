@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_scan_app/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 
 import 'core/colors.dart';
 
@@ -16,7 +16,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //lock potrait mode only
-    
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

@@ -4,7 +4,6 @@ import '../data/datasource/document_local_datasource.dart';
 import '../data/models/documenet_model.dart';
 import 'latest_documents_page.dart';
 
-
 class DocumentCategoryPage extends StatefulWidget {
   final String categoryTitle;
   const DocumentCategoryPage({
@@ -41,9 +40,13 @@ class _DocumentCategoryPageState extends State<DocumentCategoryPage> {
       body: Column(
         children: [
           Expanded(
-              child: LatestDocumentsPage(
-            documents: documents,
-          )),
+            child: documents.isEmpty
+                ? Center(child: Text("${widget.categoryTitle} is empty",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w200),))
+                : LatestDocumentsPage(
+                    documents: documents,
+                  ),
+          ),
         ],
       ),
     );
