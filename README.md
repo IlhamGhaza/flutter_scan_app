@@ -9,6 +9,15 @@
 - **Local Storage**: Store documents locally using Sqflite.
 - **Responsive UI**: Optimized for portrait mode with customized app theming using Google Fonts.
 
+## Screenshots
+<!-- tampilkan dalam bentuk tabel-->
+| Feature | Screenshot |
+| --- | --- |
+| Home Page | <img src="assets/image.png" width="200"/> |
+| Save Document Scanning | <img src="assets/image%202.png" width="200"/> |
+| Document Categorization | <img src="assets/image%203.png" width="200"/> |
+| Detail Document | <img src="assets/image%204.png" width="200"/> |
+
 ## Getting Started
 
 ### Prerequisites
@@ -18,14 +27,19 @@ Ensure you have Flutter installed. Follow the [Flutter installation guide](https
 ### Installation
 
 1. Clone this repository:
+
    ```bash
    git clone https://github.com/IlhamGhaza/flutter_scan_app.git
    ```
+
 2. Navigate to the project directory:
+
    ```bash
    cd flutter_scan_app
    ```
+
 3. Install dependencies:
+
    ```bash
    flutter pub get
    ```
@@ -33,6 +47,7 @@ Ensure you have Flutter installed. Follow the [Flutter installation guide](https
 ### Running the Application
 
 To run the app on an emulator or physical device:
+
 ```bash
 flutter run
 ```
@@ -57,6 +72,20 @@ flutter run
 - google_fonts: ^6.2.1
 - google_mlkit_document_scanner: ^0.2.1
 - sqflite: ^2.3.3+1
+- pdf: ^3.11.1
+
+## Acknowledgments
+
+- [Google ML Kit](https://developers.google.com/ml-kit) for providing the document scanning feature.
+- [Sqflite](https://pub.dev/packages/sqflite) for local database storage.
+- [Flutter](https://flutter.dev) for the framework.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit pull requests or report issues.
+<!-- ## Contact
+
+For any questions or feedback, please contact the project maintainer at [mail](mailto:cb7ezeur@selenakuyang.anonaddy.com). -->
 
 ## License
 
