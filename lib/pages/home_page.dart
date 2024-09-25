@@ -81,10 +81,7 @@ class _HomePageState extends State<HomePage> {
                         DocumentScanningResult result =
                             await documentScanner.scanDocument();
                         result.pdf;
-                        final images = result.images;
-
-                        // log('PDF: $pdf');
-                        // log('Images: $images');
+                        final images = result.images;   
                         pathImage = images[0];
                         await Navigator.push(
                             context,

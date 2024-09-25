@@ -1,7 +1,11 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_scan_app/pages/home_page.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
+import 'package:pdf/widgets.dart' as pw;
 
 import '../core/colors.dart';
 import '../core/spaces.dart';
@@ -39,6 +43,61 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
         ),
       );
       return false;
+    }
+  }
+
+  Future<void> saveAsPdf() async {
+    final pdf = pw.Document();
+    final image = pw.MemoryImage(File(widget.document.path!).readAsBytesSync());
+
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Center(
+            child: pw.Image(image),
+          );
+        },
+      ),
+    );
+
+    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+    if (selectedDirectory != null) {
+      final file =
+          File(path.join(selectedDirectory, '${widget.document.name}.pdf'));
+      await file.writeAsBytes(await pdf.save());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('PDF saved to ${file.path}'),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Directory not selected, PDF not saved'),
+        ),
+      );
+    }
+  }
+
+  Future<void> saveAsImage() async {
+    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+    if (selectedDirectory != null) {
+      final file =
+          File(path.join(selectedDirectory, '${widget.document.name}.png'));
+      await File(widget.document.path!).copy(file.path);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Image saved to ${file.path}'),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Directory not selected, image not saved'),
+        ),
+      );
     }
   }
 
@@ -91,78 +150,100 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
             ),
           ),
           const SpaceHeight(20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: saveAsPdf,
+                child: const Text("Save as PDF"),
+              ),
+              ElevatedButton(
+                onPressed: saveAsImage,
+                child: const Text("Save as Image"),
+              ),
+            ],
+          ),
+          const SpaceHeight(20),
           ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Confirm Delete'),
-                      content: const Text(
-                          'Are you sure you want to delete this document?'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                          },
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () async {
-                            bool deleteSuccess =
-                                await deleteDocument(widget.document);
-                            Navigator.of(context).pop(); // Close the dialog
-                            if (deleteSuccess) {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) => const HomePage(),
-                                ),
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  'Document deleted successfully',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                backgroundColor: Colors.green,
-                              ));
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  'Failed to delete document',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                backgroundColor: Colors.red,
-                              ));
-                            }
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            child: const Text(
-                              'Delete',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Confirm Delete'),
+                    content: const Text(
+                        'Are you sure you want to delete this document?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          bool deleteSuccess =
+                              await deleteDocument(widget.document);
+                          Navigator.of(context).pop(); // Close the dialog
+                          if (deleteSuccess) {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const HomePage(),
                               ),
+                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                'Document deleted successfully',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              backgroundColor: Colors.green,
+                            ));
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                'Failed to delete document',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              backgroundColor: Colors.red,
+                            ));
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: const Text("Delete")),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            //set baclground color to red
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text("Delete",
+                style: TextStyle(
+                  color: Colors.white,
+                )),
+          ),
         ],
       ),
     );
