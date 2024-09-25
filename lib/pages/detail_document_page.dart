@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_scan_app/pages/home_page.dart';
 
 import '../core/colors.dart';
 import '../core/spaces.dart';
@@ -112,11 +113,14 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
                                 await deleteDocument(widget.document);
                             Navigator.of(context).pop(); // Close the dialog
                             if (deleteSuccess) {
-                              Navigator.of(context)
-                                  .pop(); // Navigate back to the previous page
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => const HomePage(),
+                                ),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text(
                                   'Document deleted successfully',
                                   style: TextStyle(
                                       color: Colors.white,
@@ -125,16 +129,16 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
                                 backgroundColor: Colors.green,
                               ));
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Failed to delete document',
-                                    style: TextStyle(
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text(
+                                  'Failed to delete document',
+                                  style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold),
                                 ),
                                 backgroundColor: Colors.red,
-                                )
-                              );
+                              ));
                             }
                           },
                           child: Container(

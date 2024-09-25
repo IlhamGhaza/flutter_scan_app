@@ -24,6 +24,7 @@ class _SaveDocumentPageState extends State<SaveDocumentPage> {
   String? selectCategory;
 
   final List<String> categoires = [
+    'Catatan',
     'Kartu',
     'Nota',
     'Surat',
