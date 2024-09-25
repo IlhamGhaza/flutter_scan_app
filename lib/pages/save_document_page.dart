@@ -9,7 +9,7 @@ import '../data/models/documenet_model.dart';
 
 
 class SaveDocumentPage extends StatefulWidget {
-  final String pathImage;
+  final List<String> pathImage;
   const SaveDocumentPage({
     super.key,
     required this.pathImage,
@@ -46,12 +46,43 @@ class _SaveDocumentPageState extends State<SaveDocumentPage> {
         padding: const EdgeInsets.all(16.0),
         children: [
           // Image.file(File(widget.pathImage)),
-          SizedBox(
-              width: double.infinity,
-              height: 200,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.file(File(widget.pathImage)))),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: widget.pathImage.map((path) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: SizedBox(
+                      width: 200,
+                      height: 200,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.file(
+                          File(path),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          const SizedBox(height: 8.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              widget.pathImage.length,
+              (index) => Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary.withOpacity(index == 0 ? 1 : 0.3),
+                ),
+              ),
+            ),
+          ),
           const SizedBox(height: 16.0),
           TextFormField(
             controller: nameController,
@@ -85,7 +116,7 @@ class _SaveDocumentPageState extends State<SaveDocumentPage> {
           // save document
           DocumentModel model = DocumentModel(
             name: nameController!.text,
-            path: widget.pathImage,
+            path: widget.pathImage.isNotEmpty ? widget.pathImage[0] : '',
             category: selectCategory!,
             createdAt: DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now()),
           );

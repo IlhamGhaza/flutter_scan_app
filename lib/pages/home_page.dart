@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                             DocumentScannerOptions(
                           documentFormat: DocumentFormat.jpeg,
                           mode: ScannerMode.filter,
-                          pageLimit: 1,
+                          pageLimit: 1, //update this in the future
                           isGalleryImport: true,
                         );
 
@@ -81,13 +81,17 @@ class _HomePageState extends State<HomePage> {
                         DocumentScanningResult result =
                             await documentScanner.scanDocument();
                         result.pdf;
-                        final images = result.images;   
-                        pathImage = images[0];
+                        final images = result.images;
+                        // pathImage = images[0];
+                        SaveDocumentPage(
+                          pathImage: images,
+                          // Pass the list of image paths (n)
+                        );
                         await Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => SaveDocumentPage(
-                                      pathImage: pathImage!,
+                                      pathImage: images,
                                     )));
                         loadData();
                       },
