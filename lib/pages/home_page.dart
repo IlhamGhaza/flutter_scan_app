@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
 
   String? pathImage;
 
-  loadData() async {
+  Future<void> loadData() async {
     documents = await DocumentLocalDatasource.instance.getAllDocuments();
     setState(() {});
   }
@@ -42,84 +42,87 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         elevation: 2,
       ),
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.fromLTRB(16.0, 16, 16, 0),
-            width: double.infinity,
-            height: 120,
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Scan Kartu atau Dokument',
-                  style: TextStyle(
-                    color: AppColors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+      body: RefreshIndicator(
+        onRefresh: loadData,
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.fromLTRB(16.0, 16, 16, 0),
+              width: double.infinity,
+              height: 120,
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Scan Kartu atau Dokument',
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                const SpaceHeight(8.0),
-                ElevatedButton(
-                    onPressed: () async {
-                      DocumentScannerOptions documentOptions =
-                          DocumentScannerOptions(
-                        documentFormat: DocumentFormat.jpeg,
-                        mode: ScannerMode.filter,
-                        pageLimit: 1,
-                        isGalleryImport: true,
-                      );
+                  const SpaceHeight(8.0),
+                  ElevatedButton(
+                      onPressed: () async {
+                        DocumentScannerOptions documentOptions =
+                            DocumentScannerOptions(
+                          documentFormat: DocumentFormat.jpeg,
+                          mode: ScannerMode.filter,
+                          pageLimit: 1,
+                          isGalleryImport: true,
+                        );
 
-                      final documentScanner =
-                          DocumentScanner(options: documentOptions);
-                      DocumentScanningResult result =
-                          await documentScanner.scanDocument();
-                      result.pdf;
-                      final images = result.images;
+                        final documentScanner =
+                            DocumentScanner(options: documentOptions);
+                        DocumentScanningResult result =
+                            await documentScanner.scanDocument();
+                        result.pdf;
+                        final images = result.images;
 
-                      // log('PDF: $pdf');
-                      // log('Images: $images');
-                      pathImage = images[0];
-                      await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SaveDocumentPage(
-                                    pathImage: pathImage!,
-                                  )));
-                      loadData();
-                    },
-                    child: const Text('Scan Dokumen')),
-              ],
+                        // log('PDF: $pdf');
+                        // log('Images: $images');
+                        pathImage = images[0];
+                        await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SaveDocumentPage(
+                                      pathImage: pathImage!,
+                                    )));
+                        loadData();
+                      },
+                      child: const Text('Scan Dokumen')),
+                ],
+              ),
             ),
-          ),
-          const SpaceHeight(16.0),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TitleContent(
-              title: 'Categories',
-              onSeeAllTap: () {},
+            const SpaceHeight(16.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TitleContent(
+                title: 'Categories',
+                onSeeAllTap: () {},
+              ),
             ),
-          ),
-          const SpaceHeight(12.0),
-          const MenuCategories(),
-          const SpaceHeight(20.0),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TitleContent(
-              title: 'Latest Documents',
-              onSeeAllTap: () {},
+            const SpaceHeight(12.0),
+            const MenuCategories(),
+            const SpaceHeight(20.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TitleContent(
+                title: 'Latest Documents',
+                onSeeAllTap: () {},
+              ),
             ),
-          ),
-          const SpaceHeight(12.0),
-          Expanded(
-              child: LatestDocumentsPage(
-            documents: documents,
-          )),
-        ],
+            const SpaceHeight(12.0),
+            Expanded(
+                child: LatestDocumentsPage(
+              documents: documents,
+            )),
+          ],
+        ),
       ),
     );
   }
