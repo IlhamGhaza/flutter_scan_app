@@ -8,6 +8,8 @@
 - **Document Categorization**: Organize scanned documents into categories.
 - **Local Storage**: Store documents locally using Sqflite.
 - **Responsive UI**: Optimized for portrait mode with customized app theming using Google Fonts.
+- **Save as PDF or Image**: The app allows users to save scanned documents as PDFs or as Images direcly.
+- **Delete Document**: Users can delete a saved document, and the app offers a confirmation dialog before deletion.
 
 ## Screenshots
 <!-- tampilkan dalam bentuk tabel-->
