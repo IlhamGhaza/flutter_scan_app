@@ -4,8 +4,9 @@ class DocumentModel {
   final int? id;
   final String? name;
   final String? category;
-  final String? path;
+  final List<String>? path;
   final String? createdAt;
+
   DocumentModel({
     this.id,
     this.name,
@@ -19,7 +20,8 @@ class DocumentModel {
       'id': id,
       'name': name,
       'category': category,
-      'path': path,
+      // Jika path tidak null, konversi List<String> ke string bergabung (separated by ',')
+      'path': path != null ? path!.join(',') : null,
       'createdAt': createdAt,
     };
   }
@@ -29,7 +31,8 @@ class DocumentModel {
       id: map['id']?.toInt(),
       name: map['name'],
       category: map['category'],
-      path: map['path'],
+      // Konversi path yang sebelumnya disimpan sebagai string bergabung kembali ke List<String>
+      path: map['path'] != null ? (map['path'] as String).split(',') : [],
       createdAt: map['createdAt'],
     );
   }
