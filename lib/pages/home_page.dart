@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                             DocumentScannerOptions(
                           documentFormat: DocumentFormat.jpeg,
                           mode: ScannerMode.filter,
-                          pageLimit: 1, //update this in the future
+                          pageLimit: 100, //update this in the future
                           isGalleryImport: true,
                         );
 

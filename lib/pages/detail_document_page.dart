@@ -59,42 +59,60 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
       ),
     );
 
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    if (selectedDirectory != null) {
-      final file =
-          File(path.join(selectedDirectory, '${widget.document.name}.pdf'));
-      await file.writeAsBytes(await pdf.save());
+    try {
+      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+      if (selectedDirectory != null) {
+        final file =
+            File(path.join(selectedDirectory, '${widget.document.name}.pdf'));
+        await file.writeAsBytes(await pdf.save());
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('PDF saved to ${file.path}'),
-        ),
-      );
-    } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('PDF saved to ${file.path}'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Directory not selected, PDF not saved'),
+          ),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Directory not selected, PDF not saved'),
+          content: Text(
+              'Failed to access folder. Please grant the necessary permissions.'),
         ),
       );
     }
   }
 
   Future<void> saveAsImage() async {
-    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-    if (selectedDirectory != null) {
-      final file =
-          File(path.join(selectedDirectory, '${widget.document.name}.png'));
-      await File(widget.document.path!).copy(file.path);
+    try {
+      String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+      if (selectedDirectory != null) {
+        final file =
+            File(path.join(selectedDirectory, '${widget.document.name}.png'));
+        await File(widget.document.path!).copy(file.path);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Image saved to ${file.path}'),
-        ),
-      );
-    } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Image saved to ${file.path}'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Directory not selected, image not saved'),
+          ),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Directory not selected, image not saved'),
+          content: Text(
+              'Failed to access folder. Please grant the necessary permissions.'),
         ),
       );
     }
@@ -273,10 +291,10 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
                             },
                           );
                         },
-                        child: const Text('Delete',
-                        style: TextStyle(
-                          color: Colors.red
-                        ),))
+                        child: const Text(
+                          'Delete',
+                          style: TextStyle(color: Colors.red),
+                        ))
                   ]),
                 ],
               ),
