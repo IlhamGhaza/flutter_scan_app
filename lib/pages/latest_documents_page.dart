@@ -7,7 +7,6 @@ import '../core/spaces.dart';
 import '../data/models/documenet_model.dart';
 import 'detail_document_page.dart';
 
-
 class LatestDocumentsPage extends StatefulWidget {
   final List<DocumentModel> documents;
   const LatestDocumentsPage({
@@ -50,14 +49,25 @@ class _LatestDocumentsPageState extends State<LatestDocumentsPage> {
               child: Column(
                 children: [
                   Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        width: double.infinity,
-                        File(widget.documents[index].path!),
-                        fit: BoxFit.cover,
-                        colorBlendMode: BlendMode.colorBurn,
-                        color: AppColors.primary.withOpacity(0.2),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: widget.documents[index].path!.map((imagePath) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                File(
+                                    imagePath), // Gunakan setiap path dalam daftar path
+                                fit: BoxFit.cover,
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                colorBlendMode: BlendMode.colorBurn,
+                                color: AppColors.primary.withOpacity(0.2),
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
                     ),
                   ),

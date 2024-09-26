@@ -67,22 +67,22 @@ class _SaveDocumentPageState extends State<SaveDocumentPage> {
                 }).toList(),
               ),
             ),
-          const SizedBox(height: 8.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              widget.pathImage.length,
-              (index) => Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primary.withOpacity(index == 0 ? 1 : 0.3),
-                ),
-              ),
-            ),
-          ),
+          // const SizedBox(height: 8.0),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: List.generate(
+          //     widget.pathImage.length,
+          //     (index) => Container(
+          //       width: 8,
+          //       height: 8,
+          //       margin: const EdgeInsets.symmetric(horizontal: 4),
+          //       decoration: BoxDecoration(
+          //         shape: BoxShape.circle,
+          //         color: AppColors.primary.withOpacity(index == 0 ? 1 : 0.3),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           const SizedBox(height: 16.0),
           TextFormField(
             controller: nameController,
@@ -116,7 +116,7 @@ class _SaveDocumentPageState extends State<SaveDocumentPage> {
           // save document
           DocumentModel model = DocumentModel(
             name: nameController!.text,
-            path: widget.pathImage.isNotEmpty ? widget.pathImage[0] : '',
+            path: widget.pathImage,
             category: selectCategory!,
             createdAt: DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now()),
           );

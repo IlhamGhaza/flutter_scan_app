@@ -23,15 +23,17 @@ class DetailDocumentPage extends StatefulWidget {
 }
 
 class _DetailDocumentPageState extends State<DetailDocumentPage> {
+  int _currentImageIndex = 0;
   Future<bool> deleteDocument(DocumentModel document) async {
     try {
-      // Delete the document from the database
       int deletedRows =
           await DocumentLocalDatasource.instance.deleteDocument(document.id!);
 
       if (deletedRows > 0) {
-        final file = File(document.path!);
-        await file.delete();
+        for (var imagePath in document.path!) {
+          final file = File(imagePath);
+          await file.delete();
+        }
         return true;
       }
       return false;
@@ -47,17 +49,18 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
 
   Future<void> saveAsPdf() async {
     final pdf = pw.Document();
-    final image = pw.MemoryImage(File(widget.document.path!).readAsBytesSync());
-
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Center(
-            child: pw.Image(image),
-          );
-        },
-      ),
-    );
+    for (var imagePath in widget.document.path!) {
+      final image = pw.MemoryImage(File(imagePath).readAsBytesSync());
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            return pw.Center(
+              child: pw.Image(image),
+            );
+          },
+        ),
+      );
+    }
 
     try {
       String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
@@ -92,19 +95,20 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
     try {
       String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
       if (selectedDirectory != null) {
-        final file =
-            File(path.join(selectedDirectory, '${widget.document.name}.png'));
-        await File(widget.document.path!).copy(file.path);
-
+        for (var imagePath in widget.document.path!) {
+          final file = File(path.join(selectedDirectory,
+              '${path.basenameWithoutExtension(imagePath)}.png'));
+          await File(imagePath).copy(file.path);
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Image saved to ${file.path}'),
+            content: Text('Images saved to $selectedDirectory'),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Directory not selected, image not saved'),
+            content: Text('Directory not selected, images not saved'),
           ),
         );
       }
@@ -159,233 +163,168 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
                 ],
               ),
               const SpaceHeight(12),
-              //show multi image
-
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.file(
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          File(widget.document.path ?? ''),
-                          fit: BoxFit.contain,
-                          colorBlendMode: BlendMode.colorBurn,
-                          color: AppColors.primary.withOpacity(0.2),
+                  children: widget.document.path!.map((path) {
+                    return GestureDetector(
+                      // onTap: () {
+                      //   setState(() {
+                      //     _currentImageIndex =
+                      //         widget.document.path!.indexOf(path);
+                      //   });
+                      // },
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.file(
+                            File(path),
+                            fit: BoxFit.cover,
+                            width: MediaQuery.of(context).size.width * 0.8,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
                 ),
               ),
-              const SizedBox(height: 8.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  1,
-                  (index) => Container(
-                    width: 8,
-                    height: 8,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color:
-                          AppColors.primary.withOpacity(index == 0 ? 1 : 0.3),
-                    ),
-                  ),
-                ),
-              ),
+              // const SpaceHeight(8),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: List.generate(
+              //     widget.document.path!.length,
+              //     (index) => Container(
+              //       width: 8, 
+              //       height: 8,
+              //       margin: const EdgeInsets.symmetric(horizontal: 4),
+              //       decoration: BoxDecoration(
+              //         shape: BoxShape.circle,
+              //         color: _currentImageIndex == index
+              //             ? AppColors.primary 
+              //             : AppColors.primary.withOpacity(0.3), 
+              //       ),
+              //     ),
+              //   ),
+              // ),
               const SpaceHeight(20),
-              //save to internal memory
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Column(
                 children: [
-                  Column(children: [
-                    ElevatedButton(
-                      onPressed: saveAsPdf,
-                      child: const Text("Save as PDF"),
-                    ),
-                    const SpaceHeight(20),
-                    const Text('')
-                  ]),
-                  Column(children: [
-                    ElevatedButton(
-                      onPressed: saveAsImage,
-                      child: const Text("Save as Image"),
-                    ),
-                    const SpaceHeight(20),
-                    InkWell(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Confirm Delete'),
-                                content: const Text(
-                                    'Are you sure you want to delete this document?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(); // Close the dialog
-                                    },
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      bool deleteSuccess =
-                                          await deleteDocument(widget.document);
-                                      Navigator.of(context)
-                                          .pop(); // Close the dialog
-                                      if (deleteSuccess) {
-                                        Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const HomePage(),
-                                          ),
-                                        );
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                          content: Text(
-                                            'Document deleted successfully',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          backgroundColor: Colors.green,
-                                        ));
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                          content: Text(
-                                            'Failed to delete document',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          backgroundColor: Colors.red,
-                                        ));
-                                      }
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 8),
-                                      child: const Text(
-                                        'Delete',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(children: [
+                        ElevatedButton(
+                          onPressed: saveAsPdf,
+                          child: const Text("Save as PDF"),
+                        ),
+                      ]),
+                      Column(children: [
+                        ElevatedButton(
+                          onPressed: saveAsImage,
+                          child: const Text("Save as Image"),
+                        ),
+                      ]),
+                    ],
+                  ),
+                  const SpaceHeight(25),
+                  SizedBox(
+                    width: double.infinity,
+                    child: InkWell(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Confirm Delete'),
+                              content: const Text(
+                                  'Are you sure you want to delete this document?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    bool deleteSuccess =
+                                        await deleteDocument(widget.document);
+                                    Navigator.of(context).pop();
+                                    if (deleteSuccess) {
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HomePage(),
                                         ),
+                                      );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text(
+                                          'Document deleted successfully',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        backgroundColor: Colors.green,
+                                      ));
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text(
+                                          'Failed to delete document',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ));
+                                    }
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 8),
+                                    child: const Text(
+                                      'Delete',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        child: const Text(
-                          'Delete',
-                          style: TextStyle(color: Colors.red),
-                        ))
-                  ]),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              const SpaceHeight(20),
-              //delete document
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.end,
-              //   children: [
-              //     ElevatedButton(
-              //       onPressed: () {
-              //         showDialog(
-              //           context: context,
-              //           builder: (BuildContext context) {
-              //             return AlertDialog(
-              //               title: const Text('Confirm Delete'),
-              //               content: const Text(
-              //                   'Are you sure you want to delete this document?'),
-              //               actions: <Widget>[
-              //                 TextButton(
-              //                   onPressed: () {
-              //                     Navigator.of(context)
-              //                         .pop(); // Close the dialog
-              //                   },
-              //                   child: const Text('Cancel'),
-              //                 ),
-              //                 TextButton(
-              //                   onPressed: () async {
-              //                     bool deleteSuccess =
-              //                         await deleteDocument(widget.document);
-              //                     Navigator.of(context)
-              //                         .pop(); // Close the dialog
-              //                     if (deleteSuccess) {
-              //                       Navigator.of(context).pushReplacement(
-              //                         MaterialPageRoute(
-              //                           builder: (context) => const HomePage(),
-              //                         ),
-              //                       );
-              //                       ScaffoldMessenger.of(context)
-              //                           .showSnackBar(const SnackBar(
-              //                         content: Text(
-              //                           'Document deleted successfully',
-              //                           style: TextStyle(
-              //                               color: Colors.white,
-              //                               fontWeight: FontWeight.bold),
-              //                         ),
-              //                         backgroundColor: Colors.green,
-              //                       ));
-              //                     } else {
-              //                       ScaffoldMessenger.of(context)
-              //                           .showSnackBar(const SnackBar(
-              //                         content: Text(
-              //                           'Failed to delete document',
-              //                           style: TextStyle(
-              //                               color: Colors.white,
-              //                               fontWeight: FontWeight.bold),
-              //                         ),
-              //                         backgroundColor: Colors.red,
-              //                       ));
-              //                     }
-              //                   },
-              //                   child: Container(
-              //                     decoration: BoxDecoration(
-              //                       color: Colors.red,
-              //                       borderRadius: BorderRadius.circular(12),
-              //                     ),
-              //                     padding: const EdgeInsets.symmetric(
-              //                         horizontal: 16, vertical: 8),
-              //                     child: const Text(
-              //                       'Delete',
-              //                       style: TextStyle(
-              //                         color: Colors.white,
-              //                         fontWeight: FontWeight.bold,
-              //                       ),
-              //                     ),
-              //                   ),
-              //                 ),
-              //               ],
-              //             );
-              //           },
-              //         );
-              //       },
-              //       style: ElevatedButton.styleFrom(
-              //         backgroundColor: Colors.red,
-              //       ),
-              //       child: const Text("Delete",
-              //           style: TextStyle(
-              //             color: Colors.white,
-              //           )),
-              //     ),
-              //   ],
-              // ),
               const SpaceHeight(20),
             ],
           ),
