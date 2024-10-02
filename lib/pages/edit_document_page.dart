@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_scan_app/pages/detail_document_page.dart';
 import 'package:flutter_scan_app/pages/home_page.dart';
 import 'package:google_mlkit_document_scanner/google_mlkit_document_scanner.dart';
 import '../core/colors.dart';

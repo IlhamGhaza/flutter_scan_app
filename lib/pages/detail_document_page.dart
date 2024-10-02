@@ -23,7 +23,7 @@ class DetailDocumentPage extends StatefulWidget {
 }
 
 class _DetailDocumentPageState extends State<DetailDocumentPage> {
-  int _currentImageIndex = 0;
+  // int _currentImageIndex = 0;
 
   Future<bool> deleteDocument(DocumentModel document) async {
     try {
