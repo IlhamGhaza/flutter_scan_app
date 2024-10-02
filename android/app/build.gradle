@@ -31,11 +31,21 @@ android {
     }
 
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+         release {
             signingConfig = signingConfigs.debug
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+         debug {
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/proguard/mlkit-text-chinese.pro'
+        exclude 'META-INF/proguard/mlkit-text-devanagari.pro'
+        exclude 'META-INF/proguard/mlkit-text-japanese.pro'
+        exclude 'META-INF/proguard/mlkit-text-korean.pro'
     }
 }
 
