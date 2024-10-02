@@ -16,9 +16,10 @@
 | Feature | Screenshot |
 | --- | --- |
 | Home Page | <img src="assets/image.png" width="200"/> |
-| Save Document Scanning | <img src="assets/image%202.png" width="200"/> |
-| Document Categorization | <img src="assets/image%203.png" width="200"/> |
-| Detail Document | <img src="assets/image%204.png" width="200"/> |
+| Save Document Scanning | <img src="assets/image 2.png" width="200"/> |
+| Document Categorization | <img src="assets/image 3.png" width="200"/> |
+| Edit Document | <img src="assets/image%204.png" width="200"/> |
+| Detail Document | <img src="assets/image 5.png" width="200"/> |
 
 ## Getting Started
 
@@ -66,15 +67,6 @@ flutter run
 - [google_mlkit_document_scanner](https://pub.dev/packages/google_mlkit_document_scanner) for document scanning.
 - [sqflite](https://pub.dev/packages/sqflite) for local data storage.
 - [google_fonts](https://pub.dev/packages/google_fonts) for custom fonts.
-
-## Dependencies
-
-- Flutter SDK: ^3.5.3
-- cupertino_icons: ^1.0.8
-- google_fonts: ^6.2.1
-- google_mlkit_document_scanner: ^0.2.1
-- sqflite: ^2.3.3+1
-- pdf: ^3.11.1
 
 ## Acknowledgments
 
