@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_scan_app/pages/home_page.dart';
+import 'package:flutter_scan_app/pages/save_document_page.dart';
 import 'package:path/path.dart' as path;
 import 'package:pdf/widgets.dart' as pw;
 
@@ -127,6 +128,105 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Document'),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.edit,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => SaveDocumentPage(
+              //       pathImage: [
+              //         for (var imagePath in widget.document.path!)
+              //           File(imagePath).path
+              //       ],
+              //     ),
+              //   ),
+              // );
+            },
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
+            onPressed: () {
+              // Add delete functionality here
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Confirm Delete'),
+                    content: const Text(
+                        'Are you sure you want to delete this document?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          bool deleteSuccess =
+                              await deleteDocument(widget.document);
+                          Navigator.of(context).pop();
+                          if (deleteSuccess) {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (context) => const HomePage(),
+                              ),
+                            );
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                'Document deleted successfully',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              backgroundColor: Colors.green,
+                            ));
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text(
+                                'Failed to delete document',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              backgroundColor: Colors.red,
+                            ));
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: const Text(
+                            'Delete',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+        centerTitle: false,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -195,14 +295,14 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
               //   children: List.generate(
               //     widget.document.path!.length,
               //     (index) => Container(
-              //       width: 8, 
+              //       width: 8,
               //       height: 8,
               //       margin: const EdgeInsets.symmetric(horizontal: 4),
               //       decoration: BoxDecoration(
               //         shape: BoxShape.circle,
               //         color: _currentImageIndex == index
-              //             ? AppColors.primary 
-              //             : AppColors.primary.withOpacity(0.3), 
+              //             ? AppColors.primary
+              //             : AppColors.primary.withOpacity(0.3),
               //       ),
               //     ),
               //   ),
@@ -228,101 +328,100 @@ class _DetailDocumentPageState extends State<DetailDocumentPage> {
                     ],
                   ),
                   const SpaceHeight(25),
-                  SizedBox(
-                    width: double.infinity,
-                    child: InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Confirm Delete'),
-                              content: const Text(
-                                  'Are you sure you want to delete this document?'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () async {
-                                    bool deleteSuccess =
-                                        await deleteDocument(widget.document);
-                                    Navigator.of(context).pop();
-                                    if (deleteSuccess) {
-                                      Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const HomePage(),
-                                        ),
-                                      );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text(
-                                          'Document deleted successfully',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        backgroundColor: Colors.green,
-                                      ));
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text(
-                                          'Failed to delete document',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        backgroundColor: Colors.red,
-                                      ));
-                                    }
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
-                                    child: const Text(
-                                      'Delete',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.delete, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text(
-                              'Delete',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   child: InkWell(
+                  //     onTap: () {
+                  //       showDialog(
+                  //         context: context,
+                  //         builder: (BuildContext context) {
+                  //           return AlertDialog(
+                  //             title: const Text('Confirm Delete'),
+                  //             content: const Text(
+                  //                 'Are you sure you want to delete this document?'),
+                  //             actions: <Widget>[
+                  //               TextButton(
+                  //                 onPressed: () {
+                  //                   Navigator.of(context).pop();
+                  //                 },
+                  //                 child: const Text('Cancel'),
+                  //               ),
+                  //               TextButton(
+                  //                 onPressed: () async {
+                  //                   bool deleteSuccess =
+                  //                       await deleteDocument(widget.document);
+                  //                   Navigator.of(context).pop();
+                  //                   if (deleteSuccess) {
+                  //                     Navigator.of(context).pushReplacement(
+                  //                       MaterialPageRoute(
+                  //                         builder: (context) =>
+                  //                             const HomePage(),
+                  //                       ),
+                  //                     );
+                  //                     ScaffoldMessenger.of(context)
+                  //                         .showSnackBar(const SnackBar(
+                  //                       content: Text(
+                  //                         'Document deleted successfully',
+                  //                         style: TextStyle(
+                  //                             color: Colors.white,
+                  //                             fontWeight: FontWeight.bold),
+                  //                       ),
+                  //                       backgroundColor: Colors.green,
+                  //                     ));
+                  //                   } else {
+                  //                     ScaffoldMessenger.of(context)
+                  //                         .showSnackBar(const SnackBar(
+                  //                       content: Text(
+                  //                         'Failed to delete document',
+                  //                         style: TextStyle(
+                  //                             color: Colors.white,
+                  //                             fontWeight: FontWeight.bold),
+                  //                       ),
+                  //                       backgroundColor: Colors.red,
+                  //                     ));
+                  //                   }
+                  //                 },
+                  //                 child: Container(
+                  //                   decoration: BoxDecoration(
+                  //                     color: Colors.red,
+                  //                     borderRadius: BorderRadius.circular(12),
+                  //                   ),
+                  //                   padding: const EdgeInsets.symmetric(
+                  //                       horizontal: 16, vertical: 8),
+                  //                   child: const Text(
+                  //                     'Delete',
+                  //                     style: TextStyle(
+                  //                       color: Colors.white,
+                  //                       fontWeight: FontWeight.bold,
+                  //                     ),
+                  //                   ),
+                  //                 ),
+                  //               ),
+                  //             ],
+                  //           );
+                  //         },
+                  //       );
+                  //     },
+                  //     child: Container(
+                  //       padding: const EdgeInsets.symmetric(vertical: 12),
+                  //       decoration: BoxDecoration(
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       child: const Row(
+                  //         mainAxisSize: MainAxisSize.min,
+                  //         mainAxisAlignment: MainAxisAlignment.center,
+                  //         children: [
+                  //           Icon(Icons.delete, color: Colors.red),
+                  //           SizedBox(width: 8),
+                  //           Text(
+                  //             'Delete',
+                  //             style: TextStyle(color: Colors.red),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               const SpaceHeight(20),
