@@ -7,7 +7,6 @@ import '../core/colors.dart';
 import '../data/datasource/document_local_datasource.dart';
 import '../data/models/documenet_model.dart';
 
-
 class SaveDocumentPage extends StatefulWidget {
   final List<String> pathImage;
   const SaveDocumentPage({
@@ -46,43 +45,27 @@ class _SaveDocumentPageState extends State<SaveDocumentPage> {
         padding: const EdgeInsets.all(16.0),
         children: [
           // Image.file(File(widget.pathImage)),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: widget.pathImage.map((path) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.file(
-                          File(path),
-                          fit: BoxFit.cover,
-                        ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: widget.pathImage.map((path) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: SizedBox(
+                    width: 200,
+                    height: 200,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.file(
+                        File(path),
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
+                  ),
+                );
+              }).toList(),
             ),
-          // const SizedBox(height: 8.0),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: List.generate(
-          //     widget.pathImage.length,
-          //     (index) => Container(
-          //       width: 8,
-          //       height: 8,
-          //       margin: const EdgeInsets.symmetric(horizontal: 4),
-          //       decoration: BoxDecoration(
-          //         shape: BoxShape.circle,
-          //         color: AppColors.primary.withOpacity(index == 0 ? 1 : 0.3),
-          //       ),
-          //     ),
-          //   ),
-          // ),
+          ),
           const SizedBox(height: 16.0),
           TextFormField(
             controller: nameController,
@@ -114,21 +97,39 @@ class _SaveDocumentPageState extends State<SaveDocumentPage> {
       bottomNavigationBar: InkWell(
         onTap: () {
           // save document
-          DocumentModel model = DocumentModel(
-            name: nameController!.text,
-            path: widget.pathImage,
-            category: selectCategory!,
-            createdAt: DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now()),
-          );
-          DocumentLocalDatasource.instance.saveDocument(model);
-          Navigator.pop(
-            context,
-          );
-          const snackBar = SnackBar(
-            content: Text('Dokumen Tersimpan'),
-            backgroundColor: AppColors.primary,
-          );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          try {
+            if (nameController!.text.isEmpty || selectCategory == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Mohon lengkapi data'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              return;
+            }
+            DocumentModel model = DocumentModel(
+              name: nameController!.text,
+              path: widget.pathImage,
+              category: selectCategory!,
+              createdAt:
+                  DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now()),
+            );
+            DocumentLocalDatasource.instance.saveDocument(model);
+            Navigator.pop(
+              context,
+            );
+            const snackBar = SnackBar(
+              content: Text('Dokumen Tersimpan'),
+              backgroundColor: AppColors.primary,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } catch (e) {
+            final snackBar = SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: Colors.red,
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
         },
         child: Container(
           width: MediaQuery.of(context).size.width,
