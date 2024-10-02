@@ -45,8 +45,21 @@ class DocumentLocalDatasource {
 
   Future<void> saveDocument(DocumentModel document) async {
     final db = await instance.database;
-    await db.insert(tableDocuments, document.toMap());
+
+    if (document.id != null) {
+      // If document has an ID, update it
+      await db.update(
+        tableDocuments,
+        document.toMap(),
+        where: 'id = ?',
+        whereArgs: [document.id],
+      );
+    } else {
+      // Otherwise, insert a new document
+      await db.insert(tableDocuments, document.toMap());
+    }
   }
+
 
   Future<List<DocumentModel>> getAllDocuments() async {
     final db = await instance.database;
@@ -70,5 +83,4 @@ class DocumentLocalDatasource {
       whereArgs: [id],
     );
   }
-
 }
